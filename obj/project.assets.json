@@ -8,19 +8,19 @@
     "net8.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Brahiam\\.nuget\\packages\\": {}
+    "/home/csharp/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Brahiam\\Documents\\Clon-S1-Act-5\\Clon-S1-Act-5.csproj",
+      "projectUniqueName": "/home/csharp/Documentos/Sprint-1-activity-5/Clon-S1-Act-5.csproj",
       "projectName": "Clon-S1-Act-5",
-      "projectPath": "C:\\Users\\Brahiam\\Documents\\Clon-S1-Act-5\\Clon-S1-Act-5.csproj",
-      "packagesPath": "C:\\Users\\Brahiam\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Brahiam\\Documents\\Clon-S1-Act-5\\obj\\",
+      "projectPath": "/home/csharp/Documentos/Sprint-1-activity-5/Clon-S1-Act-5.csproj",
+      "packagesPath": "/home/csharp/.nuget/packages/",
+      "outputPath": "/home/csharp/Documentos/Sprint-1-activity-5/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Brahiam\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/csharp/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -38,11 +38,6 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -64,7 +59,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.119/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
