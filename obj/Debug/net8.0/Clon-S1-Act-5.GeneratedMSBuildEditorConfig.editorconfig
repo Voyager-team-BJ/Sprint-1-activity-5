@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Clon_S1_Act_5
-build_property.ProjectDir = C:\Users\Brahiam\Documents\Clon-S1-Act-5\
+build_property.ProjectDir = /home/csharp/Documentos/Sprint-1-activity-5/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
