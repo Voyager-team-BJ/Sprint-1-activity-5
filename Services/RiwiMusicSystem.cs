@@ -108,7 +108,12 @@ namespace riwiMusic.Services
                             Console.WriteLine("Error: El email no es válido o está vacío.");
                         }
                         
-                        Client newClient = new Client(nextClientId, clientCedula, clientName, clientEmail);
+                        Client newClient = new Client();
+                        newClient.Id = nextClientId;
+                        newClient.Cedula = clientCedula;
+                        newClient.Name = clientName;
+                        newClient.Email = clientEmail;
+                        
                         clients.Add(newClient);
                         nextClientId++; // aqui ponemos una especie de contador que se incrementa cada vez.
 
@@ -260,205 +265,9 @@ namespace riwiMusic.Services
 
         public void ManageTickets()
         {
-            bool exitModule = false;
-            while (!exitModule)
-            {
-                Console.Clear();
-                Console.WriteLine("===== Gestión de Tiquetes =====");
-                Console.WriteLine("1. Registrar compra de tiquete");
-                Console.WriteLine("2. Listar tiquetes vendidos");
-                Console.WriteLine("3. Editar compra (cambiar cliente)");
-                Console.WriteLine("4. Eliminar compra");
-                Console.WriteLine("5. Volver al menú principal");
-                Console.Write("Seleccione una opción: ");
-
-                string userOption = Console.ReadLine();
-
-                switch (userOption)
-                {
-                    case "1":
-                        //REGISTRAR COMPRA 
-                        Console.WriteLine("--- Registrar Nueva Compra de Tiquete ---");
-                        
-                        // validamos que existan conciertos y clientes
-                        if (concerts.Count == 0 || clients.Count == 0)
-                        {
-                            Console.WriteLine("Error: Debe registrar al menos un concierto y un cliente antes de vender un tiquete.");
-                            break;
-                        }
-
-                        // Pedimos el ID del concierto y se valida que exista 
-                        Console.Write("Ingrese el ID del concierto: ");
-                        int concertId = Convert.ToInt32(Console.ReadLine());
-                        
-                        Concert selectedConcert = null;
-                        foreach (var concert in concerts)
-                        {
-                            if (concert.Id == concertId)
-                            {
-                                selectedConcert = concert;
-                                break;
-                            }
-                        }
-
-                        if (selectedConcert == null)
-                        {
-                            Console.WriteLine("Error: No se encontró un concierto con ese ID.");
-                            break;
-                        }
-
-                        // Validar la capacidad del concierto
-                        int ticketsSold = 0;
-                        foreach (var ticket in tickets)
-                        {
-                            if (ticket.ConcertId == concertId)
-                            {
-                                ticketsSold++;
-                            }
-                        }
-
-                        if (ticketsSold >= selectedConcert.TotalCapacity)
-                        {
-                            Console.WriteLine("Error: No hay más cupos disponibles para este concierto.");
-                            break;
-                        }
-
-                        // Pedir y validar el ID del cliente
-                        Console.Write("Ingrese el ID del cliente que realiza la compra: ");
-                        int clientId = Convert.ToInt32(Console.ReadLine());
-
-                        Client selectedClient = null;
-                        foreach (var client in clients)
-                        {
-                            if (client.Id == clientId)
-                            {
-                                selectedClient = client;
-                                break;
-                            }
-                        }
-
-                        if (selectedClient == null)
-                        {
-                            Console.WriteLine("Error: No se encontró un cliente con ese ID.");
-                            break;
-                        }
-
-                        //Si todo es correcto, registramos la compra
-                        Ticket newTicket = new Ticket(nextTicketId, concertId, clientId);
-                        nextTicketId++;
-
-                        Console.WriteLine("¡Compra registrada con éxito!");
-                        Console.WriteLine($"Tiquete ID: {newTicket.Id} para el concierto '{selectedConcert.Name}' a nombre de '{selectedClient.Name}'.");
-                        break;
-
-                    case "2":
-                        // LISTAR TIQUETES 
-                        Console.WriteLine("--- Lista de Tiquetes Vendidos ---");
-                        if (tickets.Count == 0)
-                        {
-                            Console.WriteLine("No se han vendido tiquetes.");
-                        }
-                        else
-                        {
-                            foreach (var ticket in tickets)
-                            {
-                                // Para mostrar info útil, buscamos el nombre del concierto y del cliente
-                                string concertName = concerts.Find(c => c.Id == ticket.ConcertId)?.Name ?? "Desconocido";
-                                string clientName = clients.Find(c => c.Id == ticket.ClientId)?.Name ?? "Desconocido";
-
-                                Console.WriteLine($"ID Tiquete: {ticket.Id} | Concierto: {concertName} | Cliente: {clientName} | Fecha Compra: {ticket.PurchaseDate}");
-                            }
-                        }
-                        break;
-
-                    case "3":
-                        // EDITAR COMPRA
-                        //Por ahora solo se va a modificar el cliente asociado al tiquete
-                        Console.WriteLine("----Editar Compra de Tiquete----");
-                        if (tickets.Count == 0)
-                        {
-                            Console.WriteLine("No hay tiquetes para editar.");
-                            break;
-                        }
-
-                        Console.Write("Ingrese el ID del tiquete a editar: ");
-                        int ticketIdToEdit = Convert.ToInt32(Console.ReadLine());
-
-                        Ticket ticketToEdit = tickets.Find(t => t.Id == ticketIdToEdit);
-
-                        if (ticketToEdit == null)
-                        {
-                            Console.WriteLine("Error: No se encontró un tiquete con ese ID.");
-                        }
-                        else
-                        {
-                            Console.Write("Ingrese el nuevo ID del cliente para este tiquete: ");
-                            int newClientId = Convert.ToInt32(Console.ReadLine());
-
-                            // Validamos que el nuevo cliente exista
-                            Client newClient = clients.Find(c => c.Id == newClientId);
-                            if (newClient == null)
-                            {
-                                Console.WriteLine("Error: El nuevo ID de cliente no existe.");
-                            }
-                            else
-                            {
-                                ticketToEdit.ClientId = newClientId;
-                                Console.WriteLine("¡Tiquete actualizado con éxito!");
-                            }
-                        }
-                        break;
-
-                    case "Eliminar compra":
-                        // ELIMINAR COMPRA
-                        Console.WriteLine("--- Eliminar Compra de Tiquete ---");
-                        if (tickets.Count == 0)
-                        {
-                            Console.WriteLine("No hay tiquetes para eliminar.");
-                            break;
-                        }
-
-                        Console.Write("Ingrese el ID del tiquete que desea eliminar: ");
-                        int ticketIdToDelete = Convert.ToInt32(Console.ReadLine());
-
-                        Ticket ticketToDelete = tickets.Find(t => t.Id == ticketIdToDelete);
-                        
-                        if (ticketToDelete == null)
-                        {
-                            Console.WriteLine("Error: No se encontró un tiquete con ese ID.");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Tiquete a eliminar: ID {ticketToDelete.Id}");
-                            Console.Write("¿Está seguro? (S/N): ");
-                            string confirmation = Console.ReadLine();
-                            if (confirmation.ToUpper() == "S")
-                            {
-                                tickets.Remove(ticketToDelete);
-                                Console.WriteLine("Compra eliminada con éxito.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Operación cancelada.");
-                            }
-                        }
-                        break;
-
-                    case "5":
-                        exitModule = true;
-                        break;
-
-                    default:
-                        Console.WriteLine("Opción no válida. Intente nuevamente.");
-                        break;
-                }
-
-                if (!exitModule)
-                {
-                    Console.WriteLine("Presione Enter para continuar...");
-                    Console.ReadLine();
-                }
-            }
+            Console.WriteLine("Módulo de Tiquetes - Lógica a implementar por Persona 3.");
+            Console.WriteLine("Presione Enter para volver al menú.");
+            Console.ReadLine();
         }
         
         public void ShowPurchaseHistory()
