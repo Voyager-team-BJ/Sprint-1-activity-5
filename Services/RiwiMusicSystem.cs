@@ -22,9 +22,9 @@ namespace riwiMusic.Services
         {
             // Submenu with options to manage concerts (list, create, update, delete)
             bool exitApp = false;
-            while (exitApp)
+            while (!exitApp)
             {
-                Console.Clear();
+                //Console.Clear();
                 Console.WriteLine("===== Concert management =====");
                 Console.WriteLine("1. List concerts");
                 Console.WriteLine("2. Add concert");
@@ -70,10 +70,25 @@ namespace riwiMusic.Services
         //Add concerts
         public void AddConcert()
         {
-            Console.Clear();
+            //Console.Clear();
             Console.WriteLine("===== Add Concert =====");
-            EmptyInput("Name: ");
-            EmptyInput("City: ");
+            string name = EmptyInput("Name: ");
+            string city = EmptyInput("City: ");
+            DateTime date = ValidDateInput("Date: ");
+            int totalCapacity = TotalCapacityInput("Capacity: ");
+            Concert newConcert = new Concert();
+            newConcert.Id = nextConcertId;
+            newConcert.Name = name;
+            newConcert.Date = date;
+            newConcert.City = city;
+            newConcert.TotalCapacity = totalCapacity;
+            concerts.Add(newConcert);
+            Console.WriteLine("Concert added");
+            foreach (Concert concert in concerts)
+            {
+                Console.WriteLine($"Id: {concert.Id}\nName: {concert.Name} \nCity: {concert.City} \nDate: {concert.Date} \nCapacity: {concert.TotalCapacity}");
+            }
+            nextConcertId++;
         }
         
         //Update concert
@@ -88,12 +103,53 @@ namespace riwiMusic.Services
         //Input methods
         public string EmptyInput(string prompt)
         {
-            Console.WriteLine(prompt);
-            var input = Console.ReadLine().ToLower().Trim();
-            (!String.IsNullOrEmpty(input)) ? return input : Console.WriteLine("Value required. Try again.");
+            while (true)
+            {
+                Console.WriteLine(prompt);
+                var input = Console.ReadLine()?.Trim();
+                if (!String.IsNullOrEmpty(input))
+                {
+                    return input;
+                }
+                else
+                {
+                    Console.WriteLine("Value required. Try again.");
+                }
+            }
         }
-        
-        public string DateInput()
+        public DateTime ValidDateInput(string prompt)
+        {
+            while (true)
+            {
+                Console.WriteLine(prompt);
+                string input = Console.ReadLine()?.Trim();
+                if (DateTime.TryParse(input, out DateTime date))
+                {
+                    return date;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid date. Try again.");
+                }
+            }
+        }
+
+        public int TotalCapacityInput(string prompt)
+        {
+            while (true)
+            {
+                Console.WriteLine(prompt);
+                var input = Console.ReadLine()?.Trim();
+                if (int.TryParse(input, out int capacity))
+                {
+                    return capacity;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid number. Try again.");
+                }
+            }
+        }
         
 
         public void ManageClients()
