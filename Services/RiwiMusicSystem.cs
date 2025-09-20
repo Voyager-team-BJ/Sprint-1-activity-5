@@ -539,9 +539,127 @@ namespace riwiMusic.Services
         }
         public void RunAdvancedQueries()
         {
-            Console.WriteLine("Módulo de Consultas LINQ - Lógica a implementar por Persona 4.");
-            Console.WriteLine("Presione Enter para volver al menú.");
-            Console.ReadLine();
+            bool exitModule = false;
+            while (!exitModule)
+            {
+                Console.Clear();
+                Console.WriteLine("===== Consultas Avanzadas (LINQ) =====");
+                Console.WriteLine("1. Consultar conciertos por ciudad");
+                Console.WriteLine("2. Consultar conciertos por rango de fechas");
+                Console.WriteLine("3. Consultar cliente con más compras");
+                Console.WriteLine("4. Consultar concierto con más tiquetes vendidos");
+                Console.WriteLine("5. Volver al menú principal");
+                Console.Write("Seleccione una opción: ");
+
+                string userOption = Console.ReadLine();
+
+                switch (userOption)
+                {
+                    case "1":
+                        // --- CONSULTAR CONCIERTOS POR CIUDAD ---
+                        Console.Write("Ingrese la ciudad a buscar: ");
+                        string cityToSearch = Console.ReadLine();
+
+                        var concertsInCity = concerts.Where(c => c.City.ToLower() == cityToSearch.ToLower()).ToList();
+
+                        Console.WriteLine($"--- Conciertos en: {cityToSearch} ---");
+                        if (concertsInCity.Count == 0)
+                        {
+                            Console.WriteLine("No se encontraron conciertos en esa ciudad.");
+                        }
+                        else
+                        {
+                            foreach (var concert in concertsInCity)
+                            {
+                                concert.ShowInfo();
+                            }
+                        }
+                        break;
+
+                    case "2":
+                        // --- CONSULTAR CONCIERTOS POR RANGO DE FECHAS ---
+                        try
+                        {
+                            Console.Write("Ingrese la fecha de inicio (formato AÑO-MES-DÍA): ");
+                            DateTime startDate = DateTime.Parse(Console.ReadLine());
+                            
+                            Console.Write("Ingrese la fecha de fin (formato AÑO-MES-DÍA): ");
+                            DateTime endDate = DateTime.Parse(Console.ReadLine());
+
+                            var concertsInDateRange = concerts.Where(c => c.Date >= startDate && c.Date <= endDate).ToList();
+
+                            Console.WriteLine($"--- Conciertos entre {startDate.ToShortDateString()} y {endDate.ToShortDateString()} ---");
+                            if (concertsInDateRange.Count == 0)
+                            {
+                                Console.WriteLine("No se encontraron conciertos en ese rango de fechas.");
+                            }
+                            else
+                            {
+                                foreach (var concert in concertsInDateRange)
+                                {
+                                    concert.ShowInfo();
+                                }
+                            }
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("Error: Formato de fecha no válido.");
+                        }
+                        break;
+
+                    case "3":
+                        // --- CONSULTAR CLIENTE CON MÁS COMPRAS ---
+                        Console.WriteLine("--- Cliente con Más Compras ---");
+                        if (tickets.Count == 0)
+                        {
+                            Console.WriteLine("Aún no se han realizado compras.");
+                            break;
+                        }
+
+                        var clientGroup = tickets
+                            .GroupBy(ticket => ticket.ClientId)
+                            .OrderByDescending(group => group.Count())
+                            .FirstOrDefault();
+
+                        Client topClient = clients.Find(c => c.Id == clientGroup.Key);
+
+                        Console.WriteLine($"El cliente con más compras es: {topClient.Name} con {clientGroup.Count()} tiquetes comprados.");
+                        break;
+                        
+                    case "4":
+                        // --- CONSULTAR CONCIERTO CON MÁS TIQUETES VENDIDOS ---
+                        Console.WriteLine("--- Concierto Más Popular ---");
+                        if (tickets.Count == 0)
+                        {
+                            Console.WriteLine("Aún no se han vendido tiquetes.");
+                            break;
+                        }
+                        
+                        var concertGroup = tickets
+                            .GroupBy(ticket => ticket.ConcertId)
+                            .OrderByDescending(group => group.Count())
+                            .FirstOrDefault();
+                        
+                        Concert topConcert = concerts.Find(c => c.Id == concertGroup.Key);
+                        
+                        Console.WriteLine($"El concierto con más tiquetes vendidos es: '{topConcert.Name}' con {concertGroup.Count()} tiquetes.");
+                        break;
+
+                    case "5":
+                        exitModule = true;
+                        break;
+
+                    default:
+                        Console.WriteLine("Opción no válida. Intente nuevamente.");
+                        break;
+                }
+
+                if (!exitModule)
+                {
+                    Console.WriteLine("Presione Enter para continuar...");
+                    Console.ReadLine();
+                }
+            }
         }
     }
 }
