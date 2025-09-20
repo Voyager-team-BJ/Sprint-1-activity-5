@@ -21,19 +21,18 @@ namespace riwiMusic.Services
 
         public void ManageConcerts()
         {
-            // Submenu with options to manage concerts (list, create, update, delete)
             bool exitApp = false;
             while (!exitApp)
             {
                 //Console.Clear();
-                Console.WriteLine("===== Concert management =====");
-                Console.WriteLine("1. List concerts");
-                Console.WriteLine("2. Add concert");
-                Console.WriteLine("3. Update concert");
-                Console.WriteLine("4. Delete concert");
-                Console.WriteLine("5. View concert details");
-                Console.WriteLine("6. Leave this menu");
-                Console.Write("Please, choose an option: ");
+                Console.WriteLine("\n===== Gestión de Conciertos =====");
+                Console.WriteLine("1. Listar conciertos");
+                Console.WriteLine("2. Agregar concierto");
+                Console.WriteLine("3. Editar concierto");
+                Console.WriteLine("4. Eliminar concierto");
+                Console.WriteLine("5. Ver detalles de concierto");
+                Console.WriteLine("6. Volver al menú principal");
+                Console.Write("Seleccione una opción: ");
 
                 string userOption = Console.ReadLine();
 
@@ -56,235 +55,210 @@ namespace riwiMusic.Services
                         break;
                     case "6":
                         exitApp = true;
-                        Console.WriteLine("Thanks for using RiwiMusic. See you soon!");
                         break;
                     default:
-                        Console.WriteLine("Invalid option. Press Enter to continue.");
-                        Console.ReadLine();
+                        Console.WriteLine("Opción no válida.");
                         break;
+                }
+                
+                if (!exitApp)
+                {
+                    Console.WriteLine("\nPresione Enter para continuar...");
+                    Console.ReadLine();
                 }
             }
         }
         //List concerts
         public void ListConcerts()
         {
-            if (concerts.Count() != 0)
+            if (concerts.Any())
             {
-                Console.WriteLine("List of concerts:");
-                var concertsList = concerts.Select(concert => concert.Name);
-                foreach (var concert in concertsList)
+                Console.WriteLine("\n--- Lista de conciertos ---");
+                foreach (var concert in concerts)
                 {
-                    Console.WriteLine(concert);
+                    concert.ShowInfo();
                 }
             }
             else
             {
-                Console.WriteLine("There is no concerts on the list.");
+                Console.WriteLine("No hay conciertos registrados.");
             }
         }
-        
         //Add concerts
         public void AddConcert()
         {
             //Console.Clear();
-            Console.WriteLine("===== Add Concert =====");
-            string name = EmptyInput("Name: ");
-            string city = EmptyInput("City: ");
-            DateTime date = ValidDateInput("Date: ");
-            int totalCapacity = TotalCapacityInput("Capacity: ");
+            Console.WriteLine("\n===== Agregar Concierto =====");
+            string name = EmptyInput("Nombre: ");
+            string city = EmptyInput("Ciudad: ");
+            DateTime date = ValidDateInput("Fecha (YYYY-MM-DD): ");
+            int totalCapacity = TotalCapacityInput("Capacidad: ");
+            
             Concert newConcert = new Concert();
             newConcert.Id = nextConcertId;
             newConcert.Name = name;
             newConcert.Date = date;
             newConcert.City = city;
             newConcert.TotalCapacity = totalCapacity;
+            
             concerts.Add(newConcert);
-            Console.WriteLine("Concert added");
-            foreach (Concert concert in concerts)
-            {
-                Console.WriteLine($"Id: {concert.Id}\nName: {concert.Name} \nCity: {concert.City} \nDate: {concert.Date} \nCapacity: {concert.TotalCapacity}");
-            }
             nextConcertId++;
+            Console.WriteLine("Concierto agregado exitosamente.");
         }
-        
         //Update concert
         public void UpdateConcert()
         {
-            if (concerts.Count != 0)
+            ListConcerts();
+            if (!concerts.Any()) return;
+
+            Console.Write("Ingrese el ID del concierto a editar: ");
+            if (int.TryParse(Console.ReadLine(), out int idToUpdate))
             {
-                string concertToUpdateInput = EmptyInput("Name of the concert: ");
-                var concertToUpdate = concerts.FirstOrDefault(concert => concert.Name == concertToUpdateInput);
+                var concertToUpdate = concerts.FirstOrDefault(concert => concert.Id == idToUpdate);
                 if (concertToUpdate != null)
                 {
-                    Console.WriteLine("Enter the new information (leave blank to keep current)");
-                    Console.WriteLine("New name: ");
+                    Console.WriteLine("Ingrese la nueva información (deje vacío para mantener el valor actual)");
+                    
+                    Console.Write($"Nuevo nombre ({concertToUpdate.Name}): ");
                     string newName = Console.ReadLine();
                     if (!string.IsNullOrWhiteSpace(newName))
                     {
                         concertToUpdate.Name = newName;
                     }
-                    Console.WriteLine("New city: ");
+                    
+                    Console.Write($"Nueva ciudad ({concertToUpdate.City}): ");
                     string newCity =  Console.ReadLine();
                     if (!string.IsNullOrWhiteSpace(newCity))
                     {
                         concertToUpdate.City = newCity;
                     }
-                    Console.WriteLine("New date: ");
-                    string newDateInput =  Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(newDateInput))
-                    {
-                        if (DateTime.TryParse(newDateInput, out DateTime newDate))
-                        {
-                            concertToUpdate.Date = newDate;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid date.");
-                        }
-                    }
-                    Console.WriteLine("New total capacity: ");
-                    string newTotalCapacityInput = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(newTotalCapacityInput))
-                    {
-                        if (int.TryParse(newTotalCapacityInput, out int newTotalCapacity))
-                        {
-                            concertToUpdate.TotalCapacity = newTotalCapacity;
-                        }
-                    }
-                    Console.WriteLine("Concert updated");
-                    foreach (Concert concert in concerts)
-                    {
-                        Console.WriteLine($"Id: {concert.Id}\nName: {concert.Name} \nCity: {concert.City} \nDate: {concert.Date} \nCapacity: {concert.TotalCapacity}");
-                    }
+                    
+                    Console.WriteLine($"Nueva fecha ({concertToUpdate.Date:yyyy-MM-dd}): ");
+                    concertToUpdate.Date = ValidDateInput("Ingrese nueva fecha o deje vacío:", true, concertToUpdate.Date);
+                    
+                    Console.WriteLine($"Nueva capacidad total ({concertToUpdate.TotalCapacity}): ");
+                    concertToUpdate.TotalCapacity = TotalCapacityInput("Ingrese nueva capacidad o deje vacío:", true, concertToUpdate.TotalCapacity);
+
+                    Console.WriteLine("Concierto editado exitosamente.");
                 }
                 else
                 {
-                    Console.WriteLine("Couldn't find that concert.");
+                    Console.WriteLine("No se encontró un concierto con ese ID.");
                 }
-               
             }
             else
             {
-                Console.WriteLine("There is no concerts on the list.");
+                Console.WriteLine("Formato de ID inválido.");
             }
         }
-        
         //Delete concert
         public void DeleteConcert()
         {
-            if (concerts.Count != 0)
+            ListConcerts();
+            if (!concerts.Any()) return;
+
+            Console.Write("Ingrese el ID del concierto a eliminar: ");
+            if (int.TryParse(Console.ReadLine(), out int idToDelete))
             {
-                string concertToDeleteInput = EmptyInput("Name of the concert: ");
-                var concertToDelete = concerts.FirstOrDefault(concert => concert.Name == concertToDeleteInput);
+                var concertToDelete = concerts.FirstOrDefault(concert => concert.Id == idToDelete);
                 if (concertToDelete != null)
                 {
                     concerts.Remove(concertToDelete);
-                    Console.WriteLine("Concert deleted");
-                    if (concerts.Count != 0)
-                    {
-                        foreach (Concert concert in concerts)
-                        {
-                            Console.WriteLine($"Id: {concert.Id}\nName: {concert.Name} \nCity: {concert.City} \nDate: {concert.Date} \nCapacity: {concert.TotalCapacity}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("There is no concerts on the list.");
-                    }
+                    Console.WriteLine("Concierto eliminado exitosamente.");
                 }
                 else
                 {
-                    Console.WriteLine("Couldn't find that concert.");
+                    Console.WriteLine("No se encontró un concierto con ese ID.");
                 }
             }
             else
             {
-                Console.WriteLine("There is no concerts on the list.");
+                Console.WriteLine("Formato de ID inválido.");
             }
         }
-        
         //View concert details
         public void ViewConcertDetails()
         {
-            if (concerts.Count != 0)
+            ListConcerts();
+            if (!concerts.Any()) return;
+            
+            Console.Write("Ingrese el ID del concierto para ver detalles: ");
+            if (int.TryParse(Console.ReadLine(), out int idToShow))
             {
-                string concertToShowInput = EmptyInput("Name of the concert: ");
-                var concertToShow = concerts.FirstOrDefault(concert => concert.Name == concertToShowInput);
+                var concertToShow = concerts.FirstOrDefault(concert => concert.Id == idToShow);
                 if (concertToShow != null)
                 {
-                    Console.WriteLine($"Id: {concertToShow.Id}\nName: {concertToShow.Name} \nCity: {concertToShow.City} \nDate: {concertToShow.Date} \nCapacity: {concertToShow.TotalCapacity}");
+                    concertToShow.ShowInfo();
                 }
                 else
                 {
-                    Console.WriteLine("Couldn't find that concert.");
+                    Console.WriteLine("No se encontró un concierto con ese ID.");
                 }
             }
             else
             {
-                Console.WriteLine("There is no concerts on the list.");
+                Console.WriteLine("Formato de ID inválido.");
             }
         }
         
         //Input methods
         public string EmptyInput(string prompt)
         {
-            while (true)
+            string input;
+            do
             {
-                Console.WriteLine(prompt);
-                var input = Console.ReadLine()?.Trim();
-                if (!String.IsNullOrEmpty(input))
-                {
-                    return input;
-                }
-                else
+                Console.Write(prompt);
+                input = Console.ReadLine()?.Trim();
+                if (string.IsNullOrEmpty(input))
                 {
                     Console.WriteLine("Value required. Try again.");
                 }
-            }
+            } while (string.IsNullOrEmpty(input));
+            return input;
         }
-        public DateTime ValidDateInput(string prompt)
+        public DateTime ValidDateInput(string prompt, bool allowEmpty = false, DateTime defaultValue = default)
         {
             while (true)
             {
-                Console.WriteLine(prompt);
-                string input = Console.ReadLine()?.Trim().ToLower();
+                Console.Write(prompt);
+                string input = Console.ReadLine()?.Trim();
+                if (allowEmpty && string.IsNullOrEmpty(input))
+                {
+                    return defaultValue;
+                }
                 if (DateTime.TryParse(input, out DateTime date))
                 {
                     return date;
                 }
-                else
-                {
-                    Console.WriteLine("Invalid date. Try again.");
-                }
+                Console.WriteLine("Invalid date format. Try again.");
             }
         }
 
-        public int TotalCapacityInput(string prompt)
+        public int TotalCapacityInput(string prompt, bool allowEmpty = false, int defaultValue = default)
         {
             while (true)
             {
-                Console.WriteLine(prompt);
+                Console.Write(prompt);
                 var input = Console.ReadLine()?.Trim();
+                if (allowEmpty && string.IsNullOrEmpty(input))
+                {
+                    return defaultValue;
+                }
                 if (int.TryParse(input, out int capacity))
                 {
                     return capacity;
                 }
-                else
-                {
-                    Console.WriteLine("Invalid number. Try again.");
-                }
+                Console.WriteLine("Invalid number. Try again.");
             }
         }
-        
 
         public void ManageClients()
         {
             bool exitModule = false;
-
             while (!exitModule)
             {
                 Console.Clear();
-                Console.WriteLine("===== Gestión de Clientes =====");
+                Console.WriteLine("\n===== Gestión de Clientes =====");
                 Console.WriteLine("1. Registrar nuevo cliente");
                 Console.WriteLine("2. Listar todos los clientes");
                 Console.WriteLine("3. Editar un cliente");
@@ -297,57 +271,29 @@ namespace riwiMusic.Services
                 switch (userOption)
                 {
                     case "1":
-                        // --- REGISTRAR CLIENTE ---
-                        Console.WriteLine("--- Registrar Nuevo Cliente ---");
-
-                        // Validamos el nombre, que no esté vacío.
-                        string clientName;
-                        while (true)
-                        {
-                            Console.Write("Nombre del cliente: ");
-                            clientName = Console.ReadLine();
-                            if (!string.IsNullOrEmpty(clientName))
-                            {
-                                break; 
-                            }
-                            Console.WriteLine("Error: El nombre no puede estar vacío.");
-                        }
+                        Console.WriteLine("\n--- Registrar Nuevo Cliente ---");
+                        string clientName = EmptyInput("Nombre del cliente: ");
                         
                         string clientCedula;
                         while (true)
                         {
                             Console.Write("Cédula del cliente: ");
                             clientCedula = Console.ReadLine();
-    
-                            // Verificamos que no esté vacía
                             if (string.IsNullOrEmpty(clientCedula))
                             {
                                 Console.WriteLine("Error: La cédula no puede estar vacía.");
                                 continue;
                             }
-
-                            // Verificamos que no exista ya un cliente con esa cédula
-                            bool cedulaExists = false;
-                            foreach (Client c in clients)
-                            {
-                                if (c.Cedula == clientCedula)
-                                {
-                                    cedulaExists = true;
-                                    break;
-                                }
-                            }
-
-                            if (cedulaExists)
+                            if (clients.Any(c => c.Cedula == clientCedula))
                             {
                                 Console.WriteLine("Error: Ya existe un cliente con esa cédula.");
                             }
                             else
                             {
-                                break; // La cédula es válida y única, salimos del bucle
+                                break;
                             }
                         }
 
-                        // Validamos el correo, que tenga inmeerso el @
                         string clientEmail;
                         while (true)
                         {
@@ -362,15 +308,14 @@ namespace riwiMusic.Services
                         
                         Client newClient = new Client(nextClientId, clientCedula, clientName, clientEmail);
                         clients.Add(newClient);
-                        nextClientId++; // aqui ponemos una especie de contador que se incrementa cada vez.
+                        nextClientId++;
 
                         Console.WriteLine("¡Cliente registrado con éxito!");
                         break;
 
                     case "2":
-                        // --- LISTAR CLIENTES ---
-                        Console.WriteLine("--- Lista de Clientes Registrados ---");
-                        if (clients.Count == 0)
+                        Console.WriteLine("\n--- Lista de Clientes Registrados ---");
+                        if (!clients.Any())
                         {
                             Console.WriteLine("No hay clientes registrados.");
                         }
@@ -384,9 +329,8 @@ namespace riwiMusic.Services
                         break;
 
                     case "3":
-                        // --- EDITAR CLIENTE ---
-                        Console.WriteLine("--- Editar Información del Cliente ---");
-                        if (clients.Count == 0)
+                        Console.WriteLine("\n--- Editar Información del Cliente ---");
+                        if (!clients.Any())
                         {
                             Console.WriteLine("No hay clientes para editar.");
                             break;
@@ -395,53 +339,36 @@ namespace riwiMusic.Services
                         Console.Write("Ingrese la Cédula del cliente que desea editar: ");
                         string cedulaToEdit = Console.ReadLine();
 
-                        Client clientToEdit = null;
-                        foreach (Client client in clients)
-                        {
-                            if (client.Cedula == cedulaToEdit)
-                            {
-                                clientToEdit = client;
-                                break;
-                            }
-                        }
+                        Client clientToEdit = clients.FirstOrDefault(c => c.Cedula == cedulaToEdit);
 
                         if (clientToEdit == null)
                         {
-                            Console.WriteLine("Error: No se encontró un cliente con ese ID.");
+                            Console.WriteLine("Error: No se encontró un cliente con esa cédula.");
                         }
                         else
                         {
                             Console.WriteLine($"Editando cliente: {clientToEdit.Name}");
                             Console.WriteLine("Deje el campo vacío y presione Enter para no cambiar el valor.");
 
-                            // Editar nombre con validación
-                            while (true)
+                            Console.Write($"Nuevo nombre ({clientToEdit.Name}): ");
+                            string newName = Console.ReadLine();
+                            if (!string.IsNullOrEmpty(newName))
                             {
-                                Console.Write($"Nuevo nombre ({clientToEdit.Name}): ");
-                                string newName = Console.ReadLine();
-                                if (string.IsNullOrEmpty(newName))
-                                {
-                                    break; // omitimos en caso de no cambiar el nombre
-                                }
                                 clientToEdit.Name = newName;
-                                break;
                             }
 
-                            // Editar email con validación
-                            while (true)
+                            Console.Write($"Nuevo email ({clientToEdit.Email}): ");
+                            string newEmail = Console.ReadLine();
+                            if (!string.IsNullOrEmpty(newEmail))
                             {
-                                Console.Write($"Nuevo email ({clientToEdit.Email}): ");
-                                string newEmail = Console.ReadLine();
-                                if (string.IsNullOrEmpty(newEmail))
-                                {
-                                    break; // No se cambia el email
-                                }
                                 if (newEmail.Contains("@"))
                                 {
                                     clientToEdit.Email = newEmail;
-                                    break;
                                 }
-                                Console.WriteLine("Error: El formato del email no es válido.");
+                                else
+                                {
+                                   Console.WriteLine("Formato de email no válido. No se actualizó.");
+                                }
                             }
                             
                             Console.WriteLine("¡Cliente actualizado con éxito!");
@@ -449,30 +376,21 @@ namespace riwiMusic.Services
                         break;
                         
                     case "4":
-                        // Eliminar cliente
-                        Console.WriteLine("--- Eliminar Cliente ---");
-                        if (clients.Count == 0)
+                        Console.WriteLine("\n--- Eliminar Cliente ---");
+                        if (!clients.Any())
                         {
                             Console.WriteLine("No hay clientes para eliminar.");
                             break;
                         }
 
-                        Console.Write("Ingrese el ID del cliente que desea eliminar: ");
+                        Console.Write("Ingrese la Cédula del cliente que desea eliminar: ");
                         string cedulaToDelete = Console.ReadLine();
 
-                        Client clientToDelete = null;
-                        foreach (Client client in clients)
-                        {
-                            if (client.Cedula == cedulaToDelete)
-                            {
-                                clientToDelete = client;
-                                break;
-                            }
-                        }
+                        Client clientToDelete = clients.FirstOrDefault(c => c.Cedula == cedulaToDelete);
 
                         if (clientToDelete == null)
                         {
-                            Console.WriteLine("Error: No se encontró un cliente con ese ID.");
+                            Console.WriteLine("Error: No se encontró un cliente con esa cédula.");
                         }
                         else
                         {
@@ -501,10 +419,9 @@ namespace riwiMusic.Services
                         break;
                 }
                 
-                // Antes de salir, que presione Enter el usuario para continuar
                 if (!exitModule)
                 {
-                    Console.WriteLine("Presione Enter para continuar...");
+                    Console.WriteLine("\nPresione Enter para continuar...");
                     Console.ReadLine();
                 }
             }
@@ -516,7 +433,7 @@ namespace riwiMusic.Services
             while (!exitModule)
             {
                 Console.Clear();
-                Console.WriteLine("===== Gestión de Tiquetes =====");
+                Console.WriteLine("\n===== Gestión de Tiquetes =====");
                 Console.WriteLine("1. Registrar compra de tiquete");
                 Console.WriteLine("2. Listar tiquetes vendidos");
                 Console.WriteLine("3. Editar compra (cambiar cliente)");
@@ -529,84 +446,59 @@ namespace riwiMusic.Services
                 switch (userOption)
                 {
                     case "1":
-                        //REGISTRAR COMPRA 
-                        Console.WriteLine("--- Registrar Nueva Compra de Tiquete ---");
-                        
-                        // validamos que existan conciertos y clientes
-                        if (concerts.Count == 0 || clients.Count == 0)
+                        Console.WriteLine("\n--- Registrar Nueva Compra de Tiquete ---");
+                        if (!concerts.Any() || !clients.Any())
                         {
                             Console.WriteLine("Error: Debe registrar al menos un concierto y un cliente antes de vender un tiquete.");
                             break;
                         }
-
-                        // Pedimos el ID del concierto y se valida que exista 
+                        ListConcerts();
                         Console.Write("Ingrese el ID del concierto: ");
-                        int concertId = Convert.ToInt32(Console.ReadLine());
-                        
-                        Concert selectedConcert = null;
-                        foreach (var concert in concerts)
+                        int concertId;
+                        if (!int.TryParse(Console.ReadLine(), out concertId))
                         {
-                            if (concert.Id == concertId)
-                            {
-                                selectedConcert = concert;
-                                break;
-                            }
+                            Console.WriteLine("ID de concierto inválido.");
+                            break;
                         }
-
+                        Concert selectedConcert = concerts.FirstOrDefault(c => c.Id == concertId);
                         if (selectedConcert == null)
                         {
                             Console.WriteLine("Error: No se encontró un concierto con ese ID.");
                             break;
                         }
-
-                        // Validar la capacidad del concierto
-                        int ticketsSold = 0;
-                        foreach (var ticket in tickets)
-                        {
-                            if (ticket.ConcertId == concertId)
-                            {
-                                ticketsSold++;
-                            }
-                        }
-
+                        int ticketsSold = tickets.Count(t => t.ConcertId == concertId);
                         if (ticketsSold >= selectedConcert.TotalCapacity)
                         {
                             Console.WriteLine("Error: No hay más cupos disponibles para este concierto.");
                             break;
                         }
-
-                        // Pedir y validar el ID del cliente
-                        Console.Write("Ingrese el ID del cliente que realiza la compra: ");
-                        int clientId = Convert.ToInt32(Console.ReadLine());
-
-                        Client selectedClient = null;
+                        Console.WriteLine("\nLista de clientes:");
                         foreach (var client in clients)
                         {
-                            if (client.Id == clientId)
-                            {
-                                selectedClient = client;
-                                break;
-                            }
+                            Console.WriteLine($"ID: {client.Id} | Nombre: {client.Name} | Cédula: {client.Cedula}");
                         }
-
+                        Console.Write("Ingrese el ID del cliente que realiza la compra: ");
+                        int clientId;
+                        if (!int.TryParse(Console.ReadLine(), out clientId))
+                        {
+                            Console.WriteLine("ID de cliente inválido.");
+                            break;
+                        }
+                        Client selectedClient = clients.FirstOrDefault(c => c.Id == clientId);
                         if (selectedClient == null)
                         {
                             Console.WriteLine("Error: No se encontró un cliente con ese ID.");
                             break;
                         }
-
-                        //Si todo es correcto, registramos la compra
                         Ticket newTicket = new Ticket(nextTicketId, concertId, clientId);
+                        tickets.Add(newTicket);
                         nextTicketId++;
-
-                        Console.WriteLine("¡Compra registrada con éxito!");
+                        Console.WriteLine("\n¡Compra registrada con éxito!");
                         Console.WriteLine($"Tiquete ID: {newTicket.Id} para el concierto '{selectedConcert.Name}' a nombre de '{selectedClient.Name}'.");
                         break;
-
                     case "2":
-                        // LISTAR TIQUETES 
-                        Console.WriteLine("--- Lista de Tiquetes Vendidos ---");
-                        if (tickets.Count == 0)
+                        Console.WriteLine("\n--- Lista de Tiquetes Vendidos ---");
+                        if (!tickets.Any())
                         {
                             Console.WriteLine("No se han vendido tiquetes.");
                         }
@@ -614,41 +506,47 @@ namespace riwiMusic.Services
                         {
                             foreach (var ticket in tickets)
                             {
-                                // Para mostrar info útil, buscamos el nombre del concierto y del cliente
-                                string concertName = concerts.Find(c => c.Id == ticket.ConcertId)?.Name ?? "Desconocido";
-                                string clientName = clients.Find(c => c.Id == ticket.ClientId)?.Name ?? "Desconocido";
-
-                                Console.WriteLine($"ID Tiquete: {ticket.Id} | Concierto: {concertName} | Cliente: {clientName} | Fecha Compra: {ticket.PurchaseDate}");
+                                string concertName = concerts.FirstOrDefault(c => c.Id == ticket.ConcertId)?.Name ?? "Desconocido";
+                                string clientName = clients.FirstOrDefault(c => c.Id == ticket.ClientId)?.Name ?? "Desconocido";
+                                Console.WriteLine($"ID Tiquete: {ticket.Id} | Concierto: {concertName} | Cliente: {clientName} | Fecha Compra: {ticket.PurchaseDate:yyyy-MM-dd}");
                             }
                         }
                         break;
-
                     case "3":
-                        // EDITAR COMPRA
-                        //Por ahora solo se va a modificar el cliente asociado al tiquete
-                        Console.WriteLine("----Editar Compra de Tiquete----");
-                        if (tickets.Count == 0)
+                        Console.WriteLine("\n--- Editar Cliente de un Tiquete ---");
+                        if (!tickets.Any())
                         {
                             Console.WriteLine("No hay tiquetes para editar.");
                             break;
                         }
-
-                        Console.Write("Ingrese el ID del tiquete a editar: ");
-                        int ticketIdToEdit = Convert.ToInt32(Console.ReadLine());
-
-                        Ticket ticketToEdit = tickets.Find(t => t.Id == ticketIdToEdit);
-
+                        Console.Write("Ingrese el ID del tiquete que desea modificar: ");
+                        int ticketIdToEdit;
+                        if (!int.TryParse(Console.ReadLine(), out ticketIdToEdit))
+                        {
+                            Console.WriteLine("ID de tiquete inválido.");
+                            break;
+                        }
+                        Ticket ticketToEdit = tickets.FirstOrDefault(t => t.Id == ticketIdToEdit);
                         if (ticketToEdit == null)
                         {
                             Console.WriteLine("Error: No se encontró un tiquete con ese ID.");
                         }
                         else
                         {
+                            Console.WriteLine($"Tiquete actual: ID {ticketToEdit.Id} | Cliente actual: {clients.FirstOrDefault(c => c.Id == ticketToEdit.ClientId)?.Name ?? "Desconocido"}");
+                            Console.WriteLine("Lista de clientes disponibles:");
+                            foreach (var client in clients)
+                            {
+                                Console.WriteLine($"ID: {client.Id} | Nombre: {client.Name} | Cédula: {client.Cedula}");
+                            }
                             Console.Write("Ingrese el nuevo ID del cliente para este tiquete: ");
-                            int newClientId = Convert.ToInt32(Console.ReadLine());
-
-                            // Validamos que el nuevo cliente exista
-                            Client newClient = clients.Find(c => c.Id == newClientId);
+                            int newClientId;
+                            if (!int.TryParse(Console.ReadLine(), out newClientId))
+                            {
+                                Console.WriteLine("ID de cliente inválido.");
+                                break;
+                            }
+                            Client newClient = clients.FirstOrDefault(c => c.Id == newClientId);
                             if (newClient == null)
                             {
                                 Console.WriteLine("Error: El nuevo ID de cliente no existe.");
@@ -656,25 +554,25 @@ namespace riwiMusic.Services
                             else
                             {
                                 ticketToEdit.ClientId = newClientId;
-                                Console.WriteLine("¡Tiquete actualizado con éxito!");
+                                Console.WriteLine("¡Cliente del tiquete actualizado con éxito! El ID del tiquete permanece igual.");
                             }
                         }
                         break;
-
-                    case "Eliminar compra":
-                        // ELIMINAR COMPRA
-                        Console.WriteLine("--- Eliminar Compra de Tiquete ---");
-                        if (tickets.Count == 0)
+                    case "4":
+                        Console.WriteLine("\n--- Eliminar Compra de Tiquete ---");
+                        if (!tickets.Any())
                         {
                             Console.WriteLine("No hay tiquetes para eliminar.");
                             break;
                         }
-
                         Console.Write("Ingrese el ID del tiquete que desea eliminar: ");
-                        int ticketIdToDelete = Convert.ToInt32(Console.ReadLine());
-
-                        Ticket ticketToDelete = tickets.Find(t => t.Id == ticketIdToDelete);
-                        
+                        int ticketIdToDelete;
+                        if (!int.TryParse(Console.ReadLine(), out ticketIdToDelete))
+                        {
+                            Console.WriteLine("ID de tiquete inválido.");
+                            break;
+                        }
+                        Ticket ticketToDelete = tickets.FirstOrDefault(t => t.Id == ticketIdToDelete);
                         if (ticketToDelete == null)
                         {
                             Console.WriteLine("Error: No se encontró un tiquete con ese ID.");
@@ -695,11 +593,9 @@ namespace riwiMusic.Services
                             }
                         }
                         break;
-
                     case "5":
                         exitModule = true;
                         break;
-
                     default:
                         Console.WriteLine("Opción no válida. Intente nuevamente.");
                         break;
@@ -707,7 +603,7 @@ namespace riwiMusic.Services
 
                 if (!exitModule)
                 {
-                    Console.WriteLine("Presione Enter para continuar...");
+                    Console.WriteLine("\nPresione Enter para continuar...");
                     Console.ReadLine();
                 }
             }
@@ -716,55 +612,34 @@ namespace riwiMusic.Services
         public void ShowPurchaseHistory()
         {
             Console.Clear();
-            Console.WriteLine("===== Historial de Compras por Cliente =====");
+            Console.WriteLine("\n===== Historial de Compras por Cliente =====");
 
-            // Validar que existan clientes para poder buscar
-            if (clients.Count == 0)
+            if (!clients.Any())
             {
                 Console.WriteLine("No hay clientes registrados para mostrar su historial.");
-                Console.WriteLine("Presione Enter para continuar...");
+                Console.WriteLine("\nPresione Enter para continuar...");
                 Console.ReadLine();
                 return;
             }
 
-            // Pedir la cédula del cliente a consultar
             Console.Write("Ingrese la Cédula del cliente para ver su historial: ");
             string cedulaToSearch = Console.ReadLine();
 
-            // Buscar al cliente por su cédula
-            Client selectedClient = null;
-            foreach (var client in clients)
-            {
-                if (client.Cedula == cedulaToSearch)
-                {
-                    selectedClient = client;
-                    break;
-                }
-            }
+            Client selectedClient = clients.FirstOrDefault(c => c.Cedula == cedulaToSearch);
 
-            // Validar si el cliente fue encontrado
             if (selectedClient == null)
             {
                 Console.WriteLine("Error: No se encontró un cliente con esa cédula.");
-                Console.WriteLine("Presione Enter para continuar...");
+                Console.WriteLine("\nPresione Enter para continuar...");
                 Console.ReadLine();
                 return;
             }
 
-            // Buscar todos los tiquetes que le pertenecen a ese cliente
-            List<Ticket> clientTickets = new List<Ticket>();
-            foreach (var ticket in tickets)
-            {
-                if (ticket.ClientId == selectedClient.Id)
-                {
-                    clientTickets.Add(ticket);
-                }
-            }
+            List<Ticket> clientTickets = tickets.Where(t => t.ClientId == selectedClient.Id).ToList();
 
-            // Mostrar el reporte
-            Console.WriteLine($"--- Historial de Compras de: {selectedClient.Name} ---");
+            Console.WriteLine($"\n--- Historial de Compras de: {selectedClient.Name} ---");
 
-            if (clientTickets.Count == 0)
+            if (!clientTickets.Any())
             {
                 Console.WriteLine("Este cliente no ha realizado ninguna compra.");
             }
@@ -772,21 +647,12 @@ namespace riwiMusic.Services
             {
                 foreach (var ticket in clientTickets)
                 {
-                    // Para cada tiquete, buscamos el nombre del concierto correspondiente
-                    string concertName = "Concierto no encontrado"; 
-                    foreach (var concert in concerts)
-                    {
-                        if (concert.Id == ticket.ConcertId)
-                        {
-                            concertName = concert.Name;
-                            break;
-                        }
-                    }
+                    string concertName = concerts.FirstOrDefault(c => c.Id == ticket.ConcertId)?.Name ?? "Concierto no encontrado";
                     Console.WriteLine($"- Tiquete ID: {ticket.Id} | Concierto: {concertName} | Fecha de Compra: {ticket.PurchaseDate.ToShortDateString()}");
                 }
             }
             
-            Console.WriteLine("Presione Enter para continuar...");
+            Console.WriteLine("\nPresione Enter para continuar...");
             Console.ReadLine();
         }
         public void RunAdvancedQueries()
@@ -795,7 +661,7 @@ namespace riwiMusic.Services
             while (!exitModule)
             {
                 Console.Clear();
-                Console.WriteLine("===== Consultas Avanzadas (LINQ) =====");
+                Console.WriteLine("\n===== Consultas Avanzadas (LINQ) =====");
                 Console.WriteLine("1. Consultar conciertos por ciudad");
                 Console.WriteLine("2. Consultar conciertos por rango de fechas");
                 Console.WriteLine("3. Consultar cliente con más compras");
@@ -808,14 +674,12 @@ namespace riwiMusic.Services
                 switch (userOption)
                 {
                     case "1":
-                        // --- CONSULTAR CONCIERTOS POR CIUDAD ---
                         Console.Write("Ingrese la ciudad a buscar: ");
                         string cityToSearch = Console.ReadLine();
+                        var concertsInCity = concerts.Where(c => c.City.Equals(cityToSearch, StringComparison.OrdinalIgnoreCase)).ToList();
 
-                        var concertsInCity = concerts.Where(c => c.City.ToLower() == cityToSearch.ToLower()).ToList();
-
-                        Console.WriteLine($"--- Conciertos en: {cityToSearch} ---");
-                        if (concertsInCity.Count == 0)
+                        Console.WriteLine($"\n--- Conciertos en: {cityToSearch} ---");
+                        if (!concertsInCity.Any())
                         {
                             Console.WriteLine("No se encontraron conciertos en esa ciudad.");
                         }
@@ -829,19 +693,15 @@ namespace riwiMusic.Services
                         break;
 
                     case "2":
-                        // --- CONSULTAR CONCIERTOS POR RANGO DE FECHAS ---
                         try
                         {
-                            Console.Write("Ingrese la fecha de inicio (formato AÑO-MES-DÍA): ");
-                            DateTime startDate = DateTime.Parse(Console.ReadLine());
-                            
-                            Console.Write("Ingrese la fecha de fin (formato AÑO-MES-DÍA): ");
-                            DateTime endDate = DateTime.Parse(Console.ReadLine());
+                            DateTime startDate = ValidDateInput("Ingrese la fecha de inicio (formato AÑO-MES-DÍA): ");
+                            DateTime endDate = ValidDateInput("Ingrese la fecha de fin (formato AÑO-MES-DÍA): ");
 
-                            var concertsInDateRange = concerts.Where(c => c.Date >= startDate && c.Date <= endDate).ToList();
+                            var concertsInDateRange = concerts.Where(c => c.Date.Date >= startDate.Date && c.Date.Date <= endDate.Date).ToList();
 
-                            Console.WriteLine($"--- Conciertos entre {startDate.ToShortDateString()} y {endDate.ToShortDateString()} ---");
-                            if (concertsInDateRange.Count == 0)
+                            Console.WriteLine($"\n--- Conciertos entre {startDate.ToShortDateString()} y {endDate.ToShortDateString()} ---");
+                            if (!concertsInDateRange.Any())
                             {
                                 Console.WriteLine("No se encontraron conciertos en ese rango de fechas.");
                             }
@@ -860,9 +720,8 @@ namespace riwiMusic.Services
                         break;
 
                     case "3":
-                        // --- CONSULTAR CLIENTE CON MÁS COMPRAS ---
-                        Console.WriteLine("--- Cliente con Más Compras ---");
-                        if (tickets.Count == 0)
+                        Console.WriteLine("\n--- Cliente con Más Compras ---");
+                        if (!tickets.Any())
                         {
                             Console.WriteLine("Aún no se han realizado compras.");
                             break;
@@ -872,16 +731,20 @@ namespace riwiMusic.Services
                             .GroupBy(ticket => ticket.ClientId)
                             .OrderByDescending(group => group.Count())
                             .FirstOrDefault();
-
-                        Client topClient = clients.Find(c => c.Id == clientGroup.Key);
-
-                        Console.WriteLine($"El cliente con más compras es: {topClient.Name} con {clientGroup.Count()} tiquetes comprados.");
+                        
+                        if (clientGroup != null)
+                        {
+                             Client topClient = clients.Find(c => c.Id == clientGroup.Key);
+                             if(topClient != null)
+                             {
+                                Console.WriteLine($"El cliente con más compras es: {topClient.Name} con {clientGroup.Count()} tiquetes comprados.");
+                             }
+                        }
                         break;
                         
                     case "4":
-                        // --- CONSULTAR CONCIERTO CON MÁS TIQUETES VENDIDOS ---
-                        Console.WriteLine("--- Concierto Más Popular ---");
-                        if (tickets.Count == 0)
+                        Console.WriteLine("\n--- Concierto Más Popular ---");
+                        if (!tickets.Any())
                         {
                             Console.WriteLine("Aún no se han vendido tiquetes.");
                             break;
@@ -891,10 +754,15 @@ namespace riwiMusic.Services
                             .GroupBy(ticket => ticket.ConcertId)
                             .OrderByDescending(group => group.Count())
                             .FirstOrDefault();
-                        
-                        Concert topConcert = concerts.Find(c => c.Id == concertGroup.Key);
-                        
-                        Console.WriteLine($"El concierto con más tiquetes vendidos es: '{topConcert.Name}' con {concertGroup.Count()} tiquetes.");
+
+                        if (concertGroup != null)
+                        {
+                            Concert topConcert = concerts.Find(c => c.Id == concertGroup.Key);
+                            if (topConcert != null)
+                            {
+                                Console.WriteLine($"El concierto con más tiquetes vendidos es: '{topConcert.Name}' con {concertGroup.Count()} tiquetes.");
+                            }
+                        }
                         break;
 
                     case "5":
@@ -908,7 +776,7 @@ namespace riwiMusic.Services
 
                 if (!exitModule)
                 {
-                    Console.WriteLine("Presione Enter para continuar...");
+                    Console.WriteLine("\nPresione Enter para continuar...");
                     Console.ReadLine();
                 }
             }

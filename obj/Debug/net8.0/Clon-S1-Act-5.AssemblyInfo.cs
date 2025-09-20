@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Clon-S1-Act-5")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+01c7d77a3c0154a31fda08c79fbed4cce027f346")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+91a017705947b4850308496f89321d0377fd9edd")]
 [assembly: System.Reflection.AssemblyProductAttribute("Clon-S1-Act-5")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Clon-S1-Act-5")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
