@@ -1,4 +1,7 @@
-// En tu archivo Models/Client.cs
+
+using System;
+
+
 namespace riwiMusic.Models
 {
     public class Client
