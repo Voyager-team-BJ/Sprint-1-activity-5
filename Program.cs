@@ -17,9 +17,8 @@ while (!exitApp)
     Console.WriteLine("5. Consultas Avanzadas (LINQ)");
     Console.WriteLine("6. Salir");
     Console.Write("Seleccione una opción: ");
-
+    
     string userOption = Console.ReadLine();
-
     switch (userOption)
     {
         case "1":
