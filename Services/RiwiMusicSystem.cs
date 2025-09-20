@@ -463,11 +463,80 @@ namespace riwiMusic.Services
         
         public void ShowPurchaseHistory()
         {
-            Console.WriteLine("Módulo de Historial - Lógica a implementar por Persona 4.");
-            Console.WriteLine("Presione Enter para volver al menú.");
+            Console.Clear();
+            Console.WriteLine("===== Historial de Compras por Cliente =====");
+
+            // Validar que existan clientes para poder buscar
+            if (clients.Count == 0)
+            {
+                Console.WriteLine("No hay clientes registrados para mostrar su historial.");
+                Console.WriteLine("Presione Enter para continuar...");
+                Console.ReadLine();
+                return;
+            }
+
+            // Pedir la cédula del cliente a consultar
+            Console.Write("Ingrese la Cédula del cliente para ver su historial: ");
+            string cedulaToSearch = Console.ReadLine();
+
+            // Buscar al cliente por su cédula
+            Client selectedClient = null;
+            foreach (var client in clients)
+            {
+                if (client.Cedula == cedulaToSearch)
+                {
+                    selectedClient = client;
+                    break;
+                }
+            }
+
+            // Validar si el cliente fue encontrado
+            if (selectedClient == null)
+            {
+                Console.WriteLine("Error: No se encontró un cliente con esa cédula.");
+                Console.WriteLine("Presione Enter para continuar...");
+                Console.ReadLine();
+                return;
+            }
+
+            // Buscar todos los tiquetes que le pertenecen a ese cliente
+            List<Ticket> clientTickets = new List<Ticket>();
+            foreach (var ticket in tickets)
+            {
+                if (ticket.ClientId == selectedClient.Id)
+                {
+                    clientTickets.Add(ticket);
+                }
+            }
+
+            // Mostrar el reporte
+            Console.WriteLine($"--- Historial de Compras de: {selectedClient.Name} ---");
+
+            if (clientTickets.Count == 0)
+            {
+                Console.WriteLine("Este cliente no ha realizado ninguna compra.");
+            }
+            else
+            {
+                foreach (var ticket in clientTickets)
+                {
+                    // Para cada tiquete, buscamos el nombre del concierto correspondiente
+                    string concertName = "Concierto no encontrado"; 
+                    foreach (var concert in concerts)
+                    {
+                        if (concert.Id == ticket.ConcertId)
+                        {
+                            concertName = concert.Name;
+                            break;
+                        }
+                    }
+                    Console.WriteLine($"- Tiquete ID: {ticket.Id} | Concierto: {concertName} | Fecha de Compra: {ticket.PurchaseDate.ToShortDateString()}");
+                }
+            }
+            
+            Console.WriteLine("Presione Enter para continuar...");
             Console.ReadLine();
         }
-
         public void RunAdvancedQueries()
         {
             Console.WriteLine("Módulo de Consultas LINQ - Lógica a implementar por Persona 4.");
