@@ -16,6 +16,9 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+bin/
+obj/
+
 # Mono auto generated files
 mono_crash.*
 
@@ -402,6 +405,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
 .idea/
 
 ##
@@ -427,6 +431,7 @@ test-results/
 *.app
 
 # content below from: https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
+
 # General
 .DS_Store
 .AppleDouble
@@ -456,6 +461,7 @@ Temporary Items
 .apdisk
 
 # content below from: https://github.com/github/gitignore/blob/main/Global/Windows.gitignore
+
 # Windows thumbnail cache files
 Thumbs.db
 ehthumbs.db

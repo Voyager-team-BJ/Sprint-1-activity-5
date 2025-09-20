@@ -8,5 +8,15 @@ namespace riwiMusic.Models
         public int ConcertId { get; set; }
         public int ClientId { get; set; }
         public DateTime PurchaseDate { get; set; }
+
+        
+        public Ticket(int id, int concertId, int clientId)
+        {
+            Id = id;
+            ConcertId = concertId;
+            ClientId = clientId;
+            // Ponemos la fecha de compra cuando se creo el tiquete
+            PurchaseDate = DateTime.Now; 
+        }
     }
 }
