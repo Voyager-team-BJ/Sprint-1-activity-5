@@ -1,3 +1,5 @@
+using System;
+
 namespace riwiMusic.Models
 {
     public class Concert

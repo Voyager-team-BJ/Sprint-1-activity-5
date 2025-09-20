@@ -1,6 +1,7 @@
 using riwiMusic.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace riwiMusic.Services
 {
@@ -65,7 +66,22 @@ namespace riwiMusic.Services
             }
         }
         //List concerts
-        public void ListConcerts(){}
+        public void ListConcerts()
+        {
+            if (concerts.Count() != 0)
+            {
+                Console.WriteLine("List of concerts:");
+                var concertsList = concerts.Select(concert => concert.Name);
+                foreach (var concert in concertsList)
+                {
+                    Console.WriteLine(concert);
+                }
+            }
+            else
+            {
+                Console.WriteLine("There is no concerts on the list.");
+            }
+        }
         
         //Add concerts
         public void AddConcert()
@@ -92,13 +108,122 @@ namespace riwiMusic.Services
         }
         
         //Update concert
-        public void UpdateConcert(){}
+        public void UpdateConcert()
+        {
+            if (concerts.Count != 0)
+            {
+                string concertToUpdateInput = EmptyInput("Name of the concert: ");
+                var concertToUpdate = concerts.FirstOrDefault(concert => concert.Name == concertToUpdateInput);
+                if (concertToUpdate != null)
+                {
+                    Console.WriteLine("Enter the new information (leave blank to keep current)");
+                    Console.WriteLine("New name: ");
+                    string newName = Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(newName))
+                    {
+                        concertToUpdate.Name = newName;
+                    }
+                    Console.WriteLine("New city: ");
+                    string newCity =  Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(newCity))
+                    {
+                        concertToUpdate.City = newCity;
+                    }
+                    Console.WriteLine("New date: ");
+                    string newDateInput =  Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(newDateInput))
+                    {
+                        if (DateTime.TryParse(newDateInput, out DateTime newDate))
+                        {
+                            concertToUpdate.Date = newDate;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid date.");
+                        }
+                    }
+                    Console.WriteLine("New total capacity: ");
+                    string newTotalCapacityInput = Console.ReadLine();
+                    if (!string.IsNullOrWhiteSpace(newTotalCapacityInput))
+                    {
+                        if (int.TryParse(newTotalCapacityInput, out int newTotalCapacity))
+                        {
+                            concertToUpdate.TotalCapacity = newTotalCapacity;
+                        }
+                    }
+                    Console.WriteLine("Concert updated");
+                    foreach (Concert concert in concerts)
+                    {
+                        Console.WriteLine($"Id: {concert.Id}\nName: {concert.Name} \nCity: {concert.City} \nDate: {concert.Date} \nCapacity: {concert.TotalCapacity}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Couldn't find that concert.");
+                }
+               
+            }
+            else
+            {
+                Console.WriteLine("There is no concerts on the list.");
+            }
+        }
         
         //Delete concert
-        public void DeleteConcert(){}
+        public void DeleteConcert()
+        {
+            if (concerts.Count != 0)
+            {
+                string concertToDeleteInput = EmptyInput("Name of the concert: ");
+                var concertToDelete = concerts.FirstOrDefault(concert => concert.Name == concertToDeleteInput);
+                if (concertToDelete != null)
+                {
+                    concerts.Remove(concertToDelete);
+                    Console.WriteLine("Concert deleted");
+                    if (concerts.Count != 0)
+                    {
+                        foreach (Concert concert in concerts)
+                        {
+                            Console.WriteLine($"Id: {concert.Id}\nName: {concert.Name} \nCity: {concert.City} \nDate: {concert.Date} \nCapacity: {concert.TotalCapacity}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("There is no concerts on the list.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Couldn't find that concert.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("There is no concerts on the list.");
+            }
+        }
         
         //View concert details
-        public void ViewConcertDetails(){}
+        public void ViewConcertDetails()
+        {
+            if (concerts.Count != 0)
+            {
+                string concertToShowInput = EmptyInput("Name of the concert: ");
+                var concertToShow = concerts.FirstOrDefault(concert => concert.Name == concertToShowInput);
+                if (concertToShow != null)
+                {
+                    Console.WriteLine($"Id: {concertToShow.Id}\nName: {concertToShow.Name} \nCity: {concertToShow.City} \nDate: {concertToShow.Date} \nCapacity: {concertToShow.TotalCapacity}");
+                }
+                else
+                {
+                    Console.WriteLine("Couldn't find that concert.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("There is no concerts on the list.");
+            }
+        }
         
         //Input methods
         public string EmptyInput(string prompt)
@@ -122,7 +247,7 @@ namespace riwiMusic.Services
             while (true)
             {
                 Console.WriteLine(prompt);
-                string input = Console.ReadLine()?.Trim();
+                string input = Console.ReadLine()?.Trim().ToLower();
                 if (DateTime.TryParse(input, out DateTime date))
                 {
                     return date;
