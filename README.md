@@ -87,7 +87,7 @@ OOP allowed us to divide the project into clear modules, making the system organ
 
 # 🛠️ Technologies Used
 
-- **C# 10 / .NET 6.0**  
+- **C# 10 / .NET 8.0**  
 - **LINQ** for advanced queries  
 - **Console-based UI**  
 
